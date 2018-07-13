@@ -17,6 +17,7 @@ enum {
 int player[MAX_PLAY*2];
 int map[3 * 2];
 int mino_pic[100];
+int blue_red_pic[3];
 int xo[2]; // 0;used, 1:non used
 int turn = 1; // 1:blue, 2:red
 int px = 1, py = 1;
@@ -107,15 +108,18 @@ enum {
 	MINO_TYPE_3L,
 	MINO_TYPE_T,
 	MINO_TYPE_O,
-	MINO_TYPE_S,
-	MINO_TYPE_Z,
-	MINO_TYPE_J,
-	MINO_TYPE_L,
+	MINO_TYPE_S,	// 両面
+	MINO_TYPE_Z,	// 両面
+	MINO_TYPE_J,	// 両面
+	MINO_TYPE_L,	// 両面
 	MINO_TYPE_I,
 	MINO_TYPE_5L,
 	MINO_TYPE_5T,
 	MINO_TYPE_5W,
 	MINO_TYPE_5X,
+	MINO_TYPE_5tau,	//両面
+	MINO_TYPE_5C,
+	MINO_TYPE_5b,	//両面
 	MINO_TYPE_MAX
 };
 enum {
@@ -599,6 +603,99 @@ char minoShapes[MINO_TYPE_MAX][MINO_ANGLE_MAX][MINO_HEIGHT][MINO_WIDTH] = {
 			{ 0, 0, 0, 0 },
 		},
 	},
+	//MINO_TYPE_5τ,
+		{
+			//MINO_ANGLE_0,
+			{
+			{ 0, 0, 1, 0 },
+			{ 1, 1, 1, 0 },
+			{ 0, 1, 0, 0 },
+			{ 0, 0, 0, 0 },
+			},
+			//MINO_ANGLE_90,
+		{
+			{ 0, 1, 0, 0 },
+			{ 1, 1, 0, 0 },
+			{ 0, 1, 1, 0 },
+			{ 0, 0, 0, 0 },
+		},
+		//MINO_ANGLE_180,
+		{
+			{ 0, 1, 0, 0 },
+			{ 1, 1, 1, 0 },
+			{ 1, 0, 0, 0 },
+			{ 0, 0, 0, 0 },
+		},
+		//MINO_ANGLE_270,
+		{
+			{ 1, 1, 0, 0 },
+			{ 0, 1, 1, 0 },
+			{ 0, 1, 0, 0 },
+			{ 0, 0, 0, 0 },
+		},
+	},
+	//MINO_TYPE_5C,
+		{
+			//MINO_ANGLE_0,
+			{
+			{ 1, 1, 0, 0 },
+			{ 1, 0, 0, 0 },
+			{ 1, 1, 0, 0 },
+			{ 0, 0, 0, 0 },
+			},
+			//MINO_ANGLE_90,
+		{
+			{ 1, 1, 1, 0 },
+			{ 1, 0, 1, 0 },
+			{ 0, 0, 0, 0 },
+			{ 0, 0, 0, 0 },
+		},
+		//MINO_ANGLE_180,
+		{
+			{ 0, 1, 1, 0 },
+			{ 0, 0, 1, 0 },
+			{ 0, 1, 1, 0 },
+			{ 0, 0, 0, 0 },
+		},
+		//MINO_ANGLE_270,
+		{
+			{ 1, 0, 1, 0 },
+			{ 1, 1, 1, 0 },
+			{ 0, 0, 0, 0 },
+			{ 0, 0, 0, 0 }
+		},
+	},
+	//MINO_TYPE_5b,
+	{
+			//MINO_ANGLE_0,
+		{
+			{ 1, 0, 0, 0 },
+			{ 1, 1, 0, 0 },
+			{ 1, 1, 0, 0 },
+			{ 0, 0, 0, 0 },
+		},
+			//MINO_ANGLE_90,
+		{
+			{ 1, 1, 1, 0 },
+			{ 1, 1, 0, 0 },
+			{ 0, 0, 0, 0 },
+			{ 0, 0, 0, 0 },
+		},
+		//MINO_ANGLE_180,
+		{
+			{ 1, 1, 0, 0 },
+			{ 1, 1, 0, 0 },
+			{ 0, 1, 0, 0 },
+			{ 0, 0, 0, 0 },
+		},
+		//MINO_ANGLE_270,
+		{
+			{ 0, 1, 1, 0 },
+			{ 1, 1, 1, 0 },
+			{ 0, 0, 0, 0 },
+			{ 0, 0, 0, 0 }
+		},
+	},
 };
 
 int mino_used[2][MINO_TYPE_MAX]; //0:使用前、1:使用後
@@ -664,13 +761,13 @@ void DrawScreen() {
 	for (int y = -1; y < MINO_TYPE_MAX; y++) {
 		for (int x = 0; x < 3; x++) {
 			if (y == -1) {
-				DrawGraph(FIELD_WIDTH * 32 + x * 32, 5 * 32 + y * 20, mino_pic[0], FALSE);
+				DrawGraph(FIELD_WIDTH * 32 + x * 32, 3 * 32 + y * 20, blue_red_pic[x], FALSE);
 				continue;
 			}
 			//左端部分のブロックの種類表示
-			if(x == 0) DrawGraph(FIELD_WIDTH * 32 + x * 32, 5 * 32 + y * 20, mino_pic[y], FALSE);
+			if(x == 0) DrawGraph(FIELD_WIDTH * 32 + x * 32, 3 * 32 + y * 20, mino_pic[y], FALSE);
 			//レ点の判定および表示
-			else DrawGraph(FIELD_WIDTH * 32 + x * 32, 5 * 32 + y * 20, (mino_used[x - 1][y] ? xo[0] : xo[1]), FALSE);
+			else DrawGraph(FIELD_WIDTH * 32 + x * 32, 3 * 32 + y * 20, (mino_used[x - 1][y] ? xo[0] : xo[1]), FALSE);
 		}
 	}
 	//int mino_used[2][MINO_TYPE_MAX]; //0:使用前、1:使用後
@@ -679,7 +776,7 @@ void DrawScreen() {
 	// ターン turn(=1:blue, 2:red)
 	DrawFormatString(FIELD_WIDTH * 32 , 32 * 1, GetColor(255, 255, 255), "%s turn.", (turn == 1 ? "blue" : "red"));
 	// スコア score
-	DrawFormatString(FIELD_WIDTH * 32 , 32 * 2, GetColor(255, 255, 255), "B:%d, R:%d", score_blue, score_red);		
+	DrawFormatString(FIELD_WIDTH * 32 , 32 * 1 + 22, GetColor(255, 255, 255), "B:%d, R:%d", score_blue, score_red);		
 }
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -703,7 +800,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		LoadDivGraph("picture/map.png", 3 * 2, 3, 2, 32, 32, map);
 		LoadDivGraph("picture/used.png", MINO_TYPE_MAX, 3, MINO_TYPE_MAX / 3 + 1, 32, 20, mino_pic);
 		LoadDivGraph("picture/xo.png", 2, 2, 1, 32, 20, xo);
-
+		LoadDivGraph("picture/blue_red.png", 3, 3, 1, 32, 20, blue_red_pic);
 	}
 
 	while (!ProcessMessage()) {
